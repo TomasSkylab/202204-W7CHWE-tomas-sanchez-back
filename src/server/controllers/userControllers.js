@@ -65,7 +65,7 @@ const userLogin = async (req, res, next) => {
     } else {
       const token = jwt.sign(userData, process.env.JWT_SECRET);
 
-      res.status(200).json({ token });
+      res.status(200).json(token);
     }
   }
 };
