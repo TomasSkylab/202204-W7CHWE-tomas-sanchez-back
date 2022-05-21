@@ -5,7 +5,7 @@ const jwt = require("jsonwebtoken");
 const User = require("../../database/models/User");
 
 const registrerUser = async (req, res, next) => {
-  const { username, password } = req.body;
+  const { username, password, name } = req.body;
   const user = await User.findOne({ username });
 
   if (user) {
@@ -22,6 +22,7 @@ const registrerUser = async (req, res, next) => {
     const newUser = await User.create({
       username,
       password: encryptedPassword,
+      name,
     });
 
     res.status(201).json(newUser);
@@ -64,7 +65,7 @@ const userLogin = async (req, res, next) => {
     } else {
       const token = jwt.sign(userData, process.env.JWT_SECRET);
 
-      res.status(200).json(token);
+      res.status(200).json({ token });
     }
   }
 };
