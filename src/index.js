@@ -1,26 +1,17 @@
 require("dotenv").config();
-const debug = require("debug")("kinds:server");
+const debug = require("debug")("kinds:root");
 const chalk = require("chalk");
-const express = require("express");
-const helmet = require("helmet");
-const morgan = require("morgan");
+const connectDataBase = require("./database/models");
+const startServer = require("./database/server");
 
-const app = express();
+const port = process.env.SERVER_PORT || 4000;
+const mongoConnection = process.env.MONGODB_STRING;
 
-const startServer = (port) =>
-  new Promise((resolve, reject) => {
-    const server = app.listen(port, () => {
-      debug(chalk.yellow(`Server listening on http://localhost:${port}`));
-      resolve();
-    });
-
-    server.on("error", (error) => {
-      reject(error);
-    });
-  });
-
-app.use(morgan("dev"));
-app.use(helmet());
-app.use(express.json());
-
-module.exports = startServer;
+(async () => {
+  try {
+    await connectDataBase(mongoConnection);
+    await startServer(port);
+  } catch (error) {
+    debug(chalk.red(`Error: `, error.message));
+  }
+})();
